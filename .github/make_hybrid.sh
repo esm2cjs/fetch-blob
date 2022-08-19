@@ -31,6 +31,13 @@ PJSON=$(cat package.json | jq --indent 4 '
 ')
 echo "$PJSON" > package.json
 
+# Update package.json -> version if upstream forgot to update it
+if [[ ! -z "${TAG}" ]] ; then
+	VERSION=$(echo "${TAG/v/}")
+	PJSON=$(cat package.json | jq --tab --arg VERSION "$VERSION" '.version = $VERSION')
+	echo "$PJSON" > package.json
+fi
+
 npm i
 npm run build
 
