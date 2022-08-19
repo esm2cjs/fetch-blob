@@ -100,8 +100,11 @@ const _Blob = (_a = class {
       } else {
         part = encoder.encode(`${element}`);
       }
-      __privateSet(this, _size, __privateGet(this, _size) + (ArrayBuffer.isView(part) ? part.byteLength : part.size));
-      __privateGet(this, _parts).push(part);
+      const size = ArrayBuffer.isView(part) ? part.byteLength : part.size;
+      if (size) {
+        __privateSet(this, _size, __privateGet(this, _size) + size);
+        __privateGet(this, _parts).push(part);
+      }
     }
     __privateSet(this, _endings, `${options.endings === void 0 ? "transparent" : options.endings}`);
     const type = options.type === void 0 ? "" : String(options.type);
