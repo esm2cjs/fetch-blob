@@ -45,6 +45,8 @@ __export(from_exports, {
   File: () => import_file.default,
   blobFrom: () => blobFrom,
   blobFromSync: () => blobFromSync,
+  createTemporaryBlob: () => createTemporaryBlob,
+  createTemporaryFile: () => createTemporaryFile,
   default: () => from_default,
   fileFrom: () => fileFrom,
   fileFromSync: () => fileFromSync
@@ -52,11 +54,14 @@ __export(from_exports, {
 module.exports = __toCommonJS(from_exports);
 var import_node_fs = require("node:fs");
 var import_node_path = require("node:path");
+var import_node_os = require("node:os");
+var import_node_process = __toESM(require("node:process"));
 var import_node_domexception = __toESM(require("node-domexception"));
 var import_file = __toESM(require("./file.js"));
 var import_index = __toESM(require("./index.js"));
 var _path, _start;
-const { stat } = import_node_fs.promises;
+const { stat, mkdtemp } = import_node_fs.promises;
+let i = 0, tempDir, registry;
 const blobFromSync = (path, type) => fromBlob((0, import_node_fs.statSync)(path), path, type);
 const blobFrom = (path, type) => stat(path).then((stat2) => fromBlob(stat2, path, type));
 const fileFrom = (path, type) => stat(path).then((stat2) => fromFile(stat2, path, type));
@@ -73,6 +78,22 @@ const fromFile = (stat2, path, type = "") => new import_file.default([new BlobDa
   lastModified: stat2.mtimeMs,
   start: 0
 })], (0, import_node_path.basename)(path), { type, lastModified: stat2.mtimeMs });
+const createTemporaryBlob = async (data, { signal, type } = {}) => {
+  registry = registry || new FinalizationRegistry(import_node_fs.promises.unlink);
+  tempDir = tempDir || await mkdtemp((0, import_node_fs.realpathSync)((0, import_node_os.tmpdir)()) + import_node_path.sep);
+  const id = `${i++}`;
+  const destination = (0, import_node_path.join)(tempDir, id);
+  if (data instanceof ArrayBuffer)
+    data = new Uint8Array(data);
+  await import_node_fs.promises.writeFile(destination, data, { signal });
+  const blob = await blobFrom(destination, type);
+  registry.register(blob, destination);
+  return blob;
+};
+const createTemporaryFile = async (data, name, opts) => {
+  const blob = await createTemporaryBlob(data);
+  return new import_file.default([blob], name, opts);
+};
 const _BlobDataItem = class {
   constructor(options) {
     __privateAdd(this, _path, void 0);
@@ -109,6 +130,9 @@ const _BlobDataItem = class {
 let BlobDataItem = _BlobDataItem;
 _path = new WeakMap();
 _start = new WeakMap();
+import_node_process.default.once("exit", () => {
+  tempDir && (0, import_node_fs.rmdirSync)(tempDir, { recursive: true });
+});
 var from_default = blobFromSync;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
@@ -116,6 +140,8 @@ var from_default = blobFromSync;
   File,
   blobFrom,
   blobFromSync,
+  createTemporaryBlob,
+  createTemporaryFile,
   fileFrom,
   fileFromSync
 });
