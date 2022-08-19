@@ -3,7 +3,7 @@
 // TODO (jimmywarting): in the feature use conditional loading with top level await (requires 14.x)
 // Node has recently added whatwg stream into core
 
-import './streams.cjs'
+import '../streams.cjs'
 
 // 64 KiB (same size chrome slice theirs blob into Uint8array's)
 const POOL_SIZE = 65536
@@ -83,12 +83,8 @@ const _Blob = class Blob {
         part = encoder.encode(`${element}`)
       }
 
-      const size = ArrayBuffer.isView(part) ? part.byteLength : part.size
-      // Avoid pushing empty parts into the array to better GC them
-      if (size) {
-        this.#size += size
-        this.#parts.push(part)
-      }
+      this.#size += ArrayBuffer.isView(part) ? part.byteLength : part.size
+      this.#parts.push(part)
     }
 
     this.#endings = `${options.endings === undefined ? 'transparent' : options.endings}`

@@ -64,6 +64,6 @@ typings/
 # dotenv environment variables file
 .env
 
-*.d.ts
+
 *.d.cts
 .DS_Store

@@ -1,25 +1,20 @@
 {
-    "name": "fetch-blob",
-    "version": "3.1.5",
-    "description": "Blob & File implementation in Node.js, originally from node-fetch.",
-    "main": "index.js",
-    "type": "module",
+    "name": "@esm2cjs/fetch-blob",
+    "version": "3.1.4",
+    "description": "Blob & File implementation in Node.js, originally from node-fetch.. This is a fork of node-fetch/fetch-blob, but with CommonJS support.",
+    "main": "cjs/index.js",
     "files": [
-        "from.js",
-        "file.js",
-        "file.d.ts",
-        "index.js",
-        "index.d.ts",
-        "from.d.ts",
+        "cjs/",
+        "esm/",
         "streams.cjs"
     ],
     "scripts": {
         "test": "node --experimental-loader ./test/http-loader.js ./test/test-wpt-in-node.js",
         "report": "c8 --reporter json --reporter text npm run test",
         "coverage": "npm run report && codecov -f coverage/coverage-final.json",
-        "prepublishOnly": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"
+        "build": "tsc --declaration --emitDeclarationOnly --allowJs index.js from.js"
     },
-    "repository": "https://github.com/node-fetch/fetch-blob.git",
+    "repository": "esm2cjs/fetch-blob",
     "keywords": [
         "blob",
         "file",
@@ -28,29 +23,56 @@
     "engines": {
         "node": "^12.20 || >= 14.13"
     },
-    "author": "Jimmy Wärting <jimmy@warting.se> (https://jimmy.warting.se)",
+    "author": {
+        "name": "Dominic Griesel",
+        "email": "d.griesel@gmx.net"
+    },
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/node-fetch/fetch-blob/issues"
     },
     "homepage": "https://github.com/node-fetch/fetch-blob#readme",
     "devDependencies": {
-        "@types/node": "^18.0.2",
+        "@types/node": "^17.0.9",
         "c8": "^7.11.0",
         "typescript": "^4.5.4"
     },
-    "funding": [
-        {
-            "type": "github",
-            "url": "https://github.com/sponsors/jimmywarting"
-        },
-        {
-            "type": "paypal",
-            "url": "https://paypal.me/jimmywarting"
-        }
-    ],
+    "funding": "https://github.com/sponsors/AlCalzone",
     "dependencies": {
         "node-domexception": "^1.0.0",
         "web-streams-polyfill": "^3.0.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "module": "esm/index.js",
+    "exports": {
+        ".": {
+            "import": "./esm/index.js",
+            "require": "./cjs/index.js"
+        },
+        "./from.js": {
+            "import": "./esm/from.js",
+            "require": "./cjs/from.js"
+        },
+        "./file.js": {
+            "import": "./esm/file.js",
+            "require": "./cjs/file.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "types": "esm/index.d.ts",
+    "typesVersions": {
+        "*": {
+            "esm/index.d.ts": [
+                "esm/index.d.ts"
+            ],
+            "cjs/index.d.ts": [
+                "esm/index.d.ts"
+            ],
+            "*": [
+                "esm/*"
+            ]
+        }
     }
 }

@@ -1,6 +1,6 @@
 // Don't want to use the FileReader, don't want to lowerCase the type either
 // import from 'https://wpt.live/resources/testharnessreport.js'
-import { File, Blob } from '../from.js'
+import { File, Blob } from '../esm/from.js'
 
 let hasFailed
 globalThis.self = globalThis
